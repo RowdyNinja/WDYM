@@ -1,0 +1,26 @@
+#myOverLay {
+  box-sizing: border-box;
+  position: fixed !important;
+  bottom: 0px !important;
+  right: 0px !important;
+  z-index: 999999999 !important;
+  text-align: center !important;
+  border: 2px solid black;
+  background-color: #eac368;
+  overflow: hidden;
+}
+
+.expand {
+  width: 30% !important;
+  height: 30% !important;
+  overflow: auto;
+}
+
+.contract {
+  width: fit-content !important;
+  height: fit-content !important;
+}
+
+.openButton {
+  display: flex;
+}
