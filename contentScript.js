@@ -1,4 +1,4 @@
-const getMeaning = async (word) => {
+const fetchWordMeaning = async (word) => {
   const baseUrl = "https://api.dictionaryapi.dev/api/v2/entries/en/";
   const wordUrl = baseUrl + word;
   try {
@@ -10,7 +10,7 @@ const getMeaning = async (word) => {
   }
 };
 
-const getDiv = (partOfSpeech, definitions) => {
+const createDiv = (partOfSpeech, definitions) => {
   const baseDiv = document.createElement("div");
   const baseDivHtml = `<div>
     <h3> ${partOfSpeech}</h3>
@@ -25,15 +25,15 @@ const getDiv = (partOfSpeech, definitions) => {
   return baseDiv;
 };
 
-const generateMeaningDiv = async (word) => {
-  const meaningArray = await getMeaning(word);
+const createMeaningDiv = async (word) => {
+  const meaningArray = await fetchWordMeaning(word);
   const meaningDiv = document.createElement("div");
   meaningDiv.id = "meaning";
-  meaningDiv.style.display = "hidden";
+  meaningDiv.classList.add("contract");
   meaningArray[0].meanings.forEach((meaning) => {
     const definitions = meaning.definitions;
     const partOfSpeech = meaning.partOfSpeech;
-    const baseDiv = getDiv(partOfSpeech, definitions);
+    const baseDiv = createDiv(partOfSpeech, definitions);
     meaningDiv.appendChild(baseDiv);
   });
   return meaningDiv;
@@ -41,7 +41,6 @@ const generateMeaningDiv = async (word) => {
 
 const activateExtension = () => {
   let overlayDiv = document.createElement("DIV");
-  overlayDiv.classList.add("contract");
   overlayDiv.id = "myOverLay";
   overlayDiv.innerHTML = `<button id="read">Open</button>`;
   document.body.appendChild(overlayDiv);
@@ -51,6 +50,7 @@ const activateExtension = () => {
   let isSelecting = false;
   let selectedText = "";
   let isOverLayOpen = false;
+  let isFetchComplete = false;
 
   document.addEventListener("selectionchange", async () => {
     const newSelectedText = window.getSelection().toString();
@@ -65,24 +65,25 @@ const activateExtension = () => {
         if (previousMeaningElement) {
           previousMeaningElement.remove();
         }
-        const meaningDiv = await generateMeaningDiv(selectedText);
+        const meaningDiv = await createMeaningDiv(selectedText);
+        isFetchComplete = true;
         overlayDiv.appendChild(meaningDiv);
       }
     }
   });
 
   openBtn.addEventListener("click", () => {
+    if (!isFetchComplete) return;
+    const meaningDiv = document.getElementById("meaning");
     if (!isOverLayOpen) {
-      overlayDiv.classList.remove("contract");
       overlayDiv.classList.add("expand");
+      meaningDiv.classList.remove("contract");
       openBtn.innerText = "Close";
-      document.getElementById("meaning").style.display = "block";
       isOverLayOpen = true;
     } else {
       overlayDiv.classList.remove("expand");
-      overlayDiv.classList.add("contract");
+      meaningDiv.classList.add("contract");
       openBtn.innerText = "Open";
-      document.getElementById("meaning").style.display = "hidden";
       isOverLayOpen = false;
     }
   });

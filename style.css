@@ -17,8 +17,7 @@
 }
 
 .contract {
-  width: fit-content !important;
-  height: fit-content !important;
+  display: none !important;
 }
 
 .openButton {
